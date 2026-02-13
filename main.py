@@ -20,7 +20,7 @@ class MyPlugin(Star):
 
     @filter.platform_adapter_type(filter.PlatformAdapterType.AIOCQHTTP)
     async def on_aiocqhttp(self, event: AstrMessageEvent):
-
+        self.context.logger.info(f"start yyy")
         # ===== 提取图片 (只有满足触发条件才执行) =====
         async def extract_image_source(ev: AstrMessageEvent):
             msg_chain = ev.message_obj.message
