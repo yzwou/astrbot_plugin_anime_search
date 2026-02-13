@@ -2,7 +2,7 @@ from .tools.search_anime import AnimeTraceTool
 
 from astrbot.api.event import filter, AstrMessageEvent
 from astrbot.api.star import Context, Star, register
-from astrbot.core.message.components import Image, Reply
+from astrbot.core.message.components import Image, Reply, At
 from astrbot.core.agent.tool import ToolSet
 import json
 
@@ -20,7 +20,12 @@ class MyPlugin(Star):
 
     @filter.platform_adapter_type(filter.PlatformAdapterType.AIOCQHTTP)
     async def on_aiocqhttp(self, event: AstrMessageEvent):
-        yield event.plain_result(str(event.message_obj.message))
+        try:
+            if str(event.message_obj.message[0].qq) != "3753686289" or event.message_obj.group_id is None:
+                return
+        except:
+            return
+
         # ===== 提取图片 (只有满足触发条件才执行) =====
         async def extract_image_source(ev: AstrMessageEvent):
             msg_chain = ev.message_obj.message
