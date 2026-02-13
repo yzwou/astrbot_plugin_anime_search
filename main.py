@@ -26,7 +26,7 @@ class MyPlugin(Star):
         is_private = event.message_obj.group_id is None
 
         # 检查是否被 @ (群聊环境)
-        is_at_me = event.is_at()
+        is_at_me = event.is_at_or_wake_command
 
         # 如果既不是私聊，也没有被 @，则直接退出，交给其他插件（如 Heartflow）
         if not (is_private or is_at_me):
