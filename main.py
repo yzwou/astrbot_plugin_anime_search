@@ -44,8 +44,6 @@ class MyPlugin(Star):
 
         if result and result.content:
             json_data = result.content[0].text
-            # 这里建议增加一个日志，方便调试
-            self.context.logger.info(f"AnimeTrace Result: {json_data}")
 
             prompt = f"系统识别到图片数据：{json_data}。请结合上下文简洁地告诉用户这是谁。"
             provider = self.context.get_using_provider()
