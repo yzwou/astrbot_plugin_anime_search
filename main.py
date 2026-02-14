@@ -12,28 +12,31 @@ import json
     "astrbot_plugin_anime_search",
     "Yuwai",
     "AstrBot 辅助识别二次元图片",
-    "1.0.0"
+    "1.1.0"
 )
 class MyPlugin(Star):
     def __init__(self, context: Context):
         super().__init__(context)
         self.context.add_llm_tools(AnimeTraceTool())
 
-    @filter.platform_adapter_type(filter.PlatformAdapterType.AIOCQHTTP)
+    @filter.platform_adapter_type(filter.PlatformAdapterType.AIOCQHTTP, priority=500)
     async def on_aiocqhttp(self, event: AstrMessageEvent):
-        at_bot = False
+        should_reply = False
         try:
-            if event.message_obj.group_id is None:  # 私聊
-                at_bot = True
-            for seg in event.message_obj.message:
-                if seg.type == "At" and str(seg.qq) == "3753686289":  # 群聊At
-                    at_bot = True
-                    break
+            if event.is_at_or_wake_command:
+                should_reply = True
+            elif event.message_obj.group_id is None:  # 私聊
+                should_reply = True
+            else:
+                for seg in event.message_obj.message:
+                    if seg.type == "At" and str(seg.qq) == "3753686289":  # 群聊At
+                        should_reply = True
+                        break
 
         except Exception as e:
             yield event.plain_result(f"Error Except:{e}")
 
-        if not at_bot:
+        if not should_reply:
             return
 
         async def extract_image_source(ev: AstrMessageEvent):
