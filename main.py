@@ -56,7 +56,7 @@ class MyPlugin(Star):
             try:
                 text = msg_chain[-1].text
             except (AttributeError, IndexError) as e2:
-                self.context.logger.error(f"No text:{e2}")
+                pass
 
             return url, text
 
