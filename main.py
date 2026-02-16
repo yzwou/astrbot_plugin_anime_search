@@ -41,18 +41,26 @@ class MyPlugin(Star):
 
         async def extract_image_source(ev: AstrMessageEvent):
             msg_chain = ev.message_obj.message
+            url, text = None, None
             for seg in msg_chain:
                 try:
-                    return seg.url
+                    url = seg.url
+                    break
                 except AttributeError:
                     try:
-                        return seg.chain[0].url
+                        url = seg.chain[0].url
+                        break
                     except AttributeError:
                         pass
 
-            return None
+            try:
+                text = msg_chain[-1].text
+            except (AttributeError, IndexError) as e2:
+                self.context.logger.error(f"No text:{e2}")
 
-        image_source = await extract_image_source(event)
+            return url, text
+
+        image_source, question = await extract_image_source(event)
 
         if not image_source:
             return
@@ -62,10 +70,10 @@ class MyPlugin(Star):
 
         if result and result.content:
             json_data = result.content[0].text
-
             prompt = (
-                f"系统识别到图片数据：{json_data}。\n"
-                f"请结合上下文，用自然且简洁的语言告诉用户这张图的角色和作品信息。"
+                f"系统识别到图片：{image_source}。\n"
+                f"图片人物、场景识别结果（不一定完整，仅作为辅助）：{json_data}\n"
+                f"用自然且简洁的语言回答用户的问题：{question}"
             )
 
             provider = self.context.get_using_provider()
